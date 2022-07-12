@@ -1,0 +1,10 @@
+@font-face {
+    font-family: my-font;
+    src: url(Tfgaelicdemo-vmPPE.otf);
+}
+
+h3 {
+    font-family: my-font;
+    color: gray;
+    font-size: 50px;
+}
