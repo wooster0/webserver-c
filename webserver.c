@@ -169,7 +169,7 @@ static char *get_content_type(char *path) {
     char *file_extension;
     // notice the extra 'r' in `strrchr` which starts scanning from the right
     // rather than the left like `strchr` does
-    if (file_extension = strrchr(path, '.')) {
+    if ((file_extension = strrchr(path, '.'))) {
         if (strcmp(file_extension, ".html") == 0) {
             return "text/html";
         } else if (strcmp(file_extension, ".css") == 0) {
@@ -255,7 +255,7 @@ static int handle_request(char *buf, int len, int fd, struct Webserver webserver
 
         char *body = malloc(file_len + 1);
         size_t body_len = fread(body, 1, file_len, file);
-        if (body_len != file_len) {
+        if (body_len != (unsigned long)file_len) {
             perror("reading requested file");
             exit(1);
         }
@@ -317,6 +317,7 @@ static _Bool is_crlf(char *buf, char *end) {
  * https://httpwg.org/specs/rfc7230.html#http.message
  */
 static struct Response parse_request(char *buf, unsigned len, struct Request *request, _Bool verbose) {
+    (void)verbose;
     unsigned i;
     char *end = buf + len, c;
 
@@ -329,8 +330,6 @@ static struct Response parse_request(char *buf, unsigned len, struct Request *re
 
     // parse the case-sensitive request method
     char method_s[4]; // suffices for "GET" and "HEAD"
-    // TODO: with the streaming reader API this would be
-    //       `while ((c = reader.next()) != 0)`
     for (i = 0; i < sizeof(method_s) && buf < end && (c = *buf) != ' '; buf++)
         method_s[i++] = c;
     method_s[i] = 0;
